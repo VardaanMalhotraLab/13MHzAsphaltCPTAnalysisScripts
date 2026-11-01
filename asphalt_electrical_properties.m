@@ -49,7 +49,19 @@ e_dp_Rexolite = e_Rexolite .* rexolite_tan_delta_interpolated;
 
 %%%%%%   ---EXPECTED REF. COEFF. ---   %%%%%%
 
-g1 = -0.9819 + 1i*0.1842; %(Short)
+% g1 = -1; %(Short)
+cond = 5.96e7; %copper conductivity
+a = 3.22e-4; %AWG 22 wire radius in meters
+short_length = 0.1; %meters
+mu_0 = 1.2566e-6;
+skindepth_short = 1./(sqrt(pi.*f.*mu_0.*cond));
+R_short = short_length./(cond.*pi.*(a^2 - (a - skindepth_short).^2));
+L_short = round(2*short_length*100*(log((2*short_length*100)/(a*100)) - 1 + mu_0/4)); %output in nanohenries if input is in centimeters
+X_short = 2.*pi.*f.*L_short.*1e-9; %L_short output is in nanohenries
+Z_short = R_short + 1i*(X_short);
+Z0 = 100;
+g1 = (Z_short - Z0) ./ (Z_short + Z0); %(Short)
+% g1= -0.9819 + 1i*0.1842; %(Short) @ 13.56 MHz
 g2 = (Y0 - (1i.*w.*(e_air.*e0.*A_air./d_air))) ./ (Y0 + (1i.*w.*(e_air.*e0.*A_air./d_air)));  %Air
 Y_rexolite = (w.*(e_dp_Rexolite.*e0.*A_rexolite./d_rexolite) + (1i.*w.*(e_Rexolite.*e0.*A_rexolite./d_rexolite)));
 Y_rexolite = Y_rexolite + (1i.*w.*(e_air.*e0.*(A_air-A_rexolite)./(d_total)));
@@ -122,6 +134,7 @@ for num = 1:file_count
 
 end
 
+%Calculating averages across datasets
 e_p_core1_avg = mean(e_p_core1, 1);
 e_dp_core1_avg = mean(e_dp_core1, 1);
 loss_t_core1_avg = mean(loss_t_core1, 1);
@@ -129,3 +142,10 @@ loss_t_core1_avg = mean(loss_t_core1, 1);
 e_p_core2_avg = mean(e_p_core2, 1);
 e_dp_core2_avg = mean(e_dp_core2, 1);
 loss_t_core2_avg = mean(loss_t_core2, 1);
+
+%Calculating standard deviation across datasets to characterize noise/deviation from the VNA
+e_p_core1_std = std(e_p_core1, 0, 1);
+loss_t_core1_std = std(loss_t_core1, 0, 1);
+
+e_p_core2_std = std(e_p_core2, 0, 1);
+loss_t_core2_std = std(loss_t_core2, 0, 1);
