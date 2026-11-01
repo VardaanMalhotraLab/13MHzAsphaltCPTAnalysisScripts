@@ -49,7 +49,7 @@ e_dp_Rexolite = e_Rexolite .* rexolite_tan_delta_interpolated;
 
 %%%%%%   ---EXPECTED REF. COEFF. ---   %%%%%%
 
-g1 = -1; %(Short)
+g1 = -0.9819 + 1i*0.1842; %(Short)
 g2 = (Y0 - (1i.*w.*(e_air.*e0.*A_air./d_air))) ./ (Y0 + (1i.*w.*(e_air.*e0.*A_air./d_air)));  %Air
 Y_rexolite = (w.*(e_dp_Rexolite.*e0.*A_rexolite./d_rexolite) + (1i.*w.*(e_Rexolite.*e0.*A_rexolite./d_rexolite)));
 Y_rexolite = Y_rexolite + (1i.*w.*(e_air.*e0.*(A_air-A_rexolite)./(d_total)));
